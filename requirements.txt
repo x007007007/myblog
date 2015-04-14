@@ -1,3 +1,5 @@
 Flask
 sqlalchemy
 WTForms
+flask-sqlalchemy
+Flask-Migrate
