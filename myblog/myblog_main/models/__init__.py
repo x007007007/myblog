@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Column, String, DateTime, Integer, Binary
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
@@ -7,9 +8,10 @@ from flask import current_app
 from uuid import uuid1
 import datetime
 import time
-
+import hashlib
 
 db = SQLAlchemy()
+
 
 
 class MyBlogBaseModel(db.Model):
@@ -60,12 +62,43 @@ class Article(MyBlogBaseModel):
         super(Article, self).__init__(*args,**kwargs)
 
 
-class User(db.Model):
+class User(MyBlogBaseModel):
     __tablename__ = 'user'
     uuid = Column(String(64), primary_key=True)
-    username = Column(String(64))
+    username = Column(String(64), unique=True)
     security = Column(String(64))
     sessions = relationship("WebSession", backref="websession")
+
+    @classmethod
+    def create_user(cls, name, pswd):
+        session = db.session()
+        user = cls()
+        user.name = name
+        user.set_password(pswd)
+        session.add(user)
+        session.commit()
+
+    def is_vaild_pasword(self, pswd):
+        return self.security == hashlib.sha512(self.username + pswd).digest()
+
+    def set_password(self, pswd):
+        self.security = hashlib.sha512(self.username + pswd).digest()
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    @property
+    def get_id(self):
+        return self.uuid
 
 
 class WebSession(db.Model):
