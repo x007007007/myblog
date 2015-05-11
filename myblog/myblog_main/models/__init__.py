@@ -9,18 +9,11 @@ from uuid import uuid1
 import datetime
 import time
 import hashlib
+from .. import login_manager
 
 db = SQLAlchemy()
 
-
-
-class MyBlogBaseModel(db.Model):
-    __abstract__ = True
-
-    uuid = Column(String(64), primary_key=True)
-    create_time = Column(DateTime)
-    update_time = Column(DateTime)
-
+class MyBlogBaseModelClassMaxin(object):
     @classmethod
     def get_new_uuid(cls):
         return "%s_%s" % (cls.__name__, uuid1().hex)
@@ -28,6 +21,14 @@ class MyBlogBaseModel(db.Model):
     @classmethod
     def get_current_datetime(cls):
         return datetime.datetime.fromtimestamp(time.time())
+
+class MyBlogBaseModel(db.Model, MyBlogBaseModelClassMaxin):
+    __abstract__ = True
+
+    uuid = Column(String(64), primary_key=True)
+    create_time = Column(DateTime)
+    update_time = Column(DateTime)
+
 
     def __init__(self, uuid=None, create_time=None, *args, **kwargs):
         self.uuid = uuid if uuid else self.get_new_uuid()
@@ -62,56 +63,6 @@ class Article(MyBlogBaseModel):
         super(Article, self).__init__(*args,**kwargs)
 
 
-class User(MyBlogBaseModel):
-    __tablename__ = 'user'
-    uuid = Column(String(64), primary_key=True)
-    username = Column(String(64), unique=True)
-    security = Column(String(64))
-    sessions = relationship("WebSession", backref="websession")
-
-    @classmethod
-    def create_user(cls, name, pswd):
-        session = db.session()
-        user = cls()
-        user.name = name
-        user.set_password(pswd)
-        session.add(user)
-        session.commit()
-
-    def is_vaild_pasword(self, pswd):
-        return self.security == hashlib.sha512(self.username + pswd).digest()
-
-    def set_password(self, pswd):
-        self.security = hashlib.sha512(self.username + pswd).digest()
-
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    @property
-    def get_id(self):
-        return self.uuid
-
-
-class WebSession(db.Model):
-    __tablename__ = 'websession'
-
-    session = Column(String(64), primary_key=True)
-    lifetime = Column(Integer)
-    user_uuid = Column(String(64), ForeignKey('user.uuid'))
-    login_time = Column(DateTime)
-    last_query_time = Column(DateTime)
-    info = Column(String)
-
-
 class Configura(db.Model):
     __tablename__ = 'configura'
 
@@ -119,3 +70,5 @@ class Configura(db.Model):
     type = Column(String(8))
     value = Column(Binary, nullable=True)
     default_value = Column(Binary, nullable=True)
+
+from authorization import User, WebSession
