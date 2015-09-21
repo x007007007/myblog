@@ -1,7 +1,8 @@
 # -*- coding: utf8 -*-
-
+from ajaxWtforms import AjaxForm
 from wtforms import (Form, StringField, TextAreaField, DateTimeField,
                      PasswordField, BooleanField, validators)
+
 
 
 class PostForm(Form):
@@ -10,7 +11,8 @@ class PostForm(Form):
     browse_time = DateTimeField('time')
 
 
-class LoginForm(Form):
+class LoginForm(AjaxForm):
     username = StringField('username', [validators.length(min=1, max=255)])
     password = PasswordField('password', [validators.length(min=1, max=255)])
     rememberme = BooleanField('rememberme')
+

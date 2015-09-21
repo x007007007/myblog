@@ -8,7 +8,7 @@ from myblog_main import models as myblog_models
 from myblog_main import view as myblog_views
 from myblog_main import login_manager
 from flask_script import Manager
-
+from ajaxWtforms import InitAjaxWtforms
 
 
 from threading import Thread
@@ -23,7 +23,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/myblog.db"
 app.debug = True
 
 manager = Manager(app)
-
+InitAjaxWtforms(app)
 
 
 @manager.command

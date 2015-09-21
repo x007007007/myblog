@@ -1,6 +1,8 @@
+watchdog
 Flask
 sqlalchemy
 WTForms
 flask-sqlalchemy
 Flask-Migrate
 flask-script
+flask-login
