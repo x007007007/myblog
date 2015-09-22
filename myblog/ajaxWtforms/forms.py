@@ -15,7 +15,8 @@ class AjaxFormMeta(FormMeta):
     def __init__(cls, name, bases, attrs):
         if cls.__module__ not in [b'wtforms.compat', b'ajaxWtforms.forms']:
             view = View(cls)
-            ajax_wtforms_bp.route(view.get_path())(view)
+            ajax_wtforms_bp.route(view.get_path(), methods=['GET', 'POST'])(view)
+            print view.get_path(), view.__name__
         super(AjaxFormMeta, cls).__init__(name, bases, attrs)
 
 
