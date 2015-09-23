@@ -46,6 +46,7 @@ def list_routes():
     for line in sorted(output):
         print line
 
+
 if __name__ == "__main__":
     # To allow aptana to receive errors, set use_debugger=False
     myblog_models.db.app = app

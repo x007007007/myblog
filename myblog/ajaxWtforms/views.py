@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
 from flask import Blueprint, request, url_for
 from flask import render_template
+from wtforms.fields import Field
 import pprint
+import json
 
 ajax_wtforms_bp = Blueprint('ajax_wtforms', __name__, template_folder="templates", static_folder='static', static_url_path='/static/ajaxforms')
 
@@ -34,10 +36,16 @@ class View(object):
 
 
     def POST(self):
-        for key in request.args:
-            print request.args[key]
-        print()
-        return ""
+        form=self.Form(request.form)
+        errors = {}
+        have_err = False
+        for key in request.form:
+            field = form._fields[key]
+            assert isinstance(field, Field)
+            if not field.validate(form):
+                have_err = True
+                errors[key]=field.errors
+        return json.dumps({"error": have_err, "msg":errors})
 
     def get_path(self):
         return ("/{}/{}".format(self.Form.__module__.replace(".", "/"), self.__name__))

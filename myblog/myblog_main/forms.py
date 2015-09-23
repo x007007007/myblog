@@ -5,7 +5,7 @@ from wtforms import (Form, StringField, TextAreaField, DateTimeField,
 
 
 
-class PostForm(Form):
+class PostForm(AjaxForm):
     title = StringField('title', [validators.Length(min=1, max=255)])
     text = TextAreaField('article', [validators.Length(min=1)])
     browse_time = DateTimeField('time')
