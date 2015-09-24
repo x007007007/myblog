@@ -30,8 +30,6 @@ class View(object):
         Form, form = self.Form, self.form
         assert issubclass(Form, AjaxForm)
         assert isinstance(form, Form)
-        for key in form._fields:
-            pprint.pprint(dir(form._fields))
         return render_template("test.tpl" , fields=form._fields)
 
 

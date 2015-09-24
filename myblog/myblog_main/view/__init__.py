@@ -2,13 +2,14 @@
 import authorization
 from flask import render_template, request, redirect, url_for, flash, Response, session
 from ..models import Commit, Keyword, Article, db
-from ..forms import PostForm
+from ..forms import PostForm, TestForm
 from .. import pages
 from ..lib import View
 from ..models import WebSession, User
 from .. import login_manager
 from flask_login import login_required
 from flask_login import logout_user
+
 
 
 
@@ -39,6 +40,7 @@ class Post(View):
     @login_required
     def get():
         form = PostForm()
+        print(dir(PostForm))
         return render_template('post.tpl', form=form)
 
 
@@ -49,7 +51,11 @@ class Commit(View):
         return ('sss%d' % test)
 
 
-
-
+@pages.route('/test/')
+class Test(View):
+    @staticmethod
+    def get():
+        form = TestForm()
+        return render_template('login.tpl', form=form)
 
 

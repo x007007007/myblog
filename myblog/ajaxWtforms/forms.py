@@ -13,11 +13,22 @@ env = Environment(loader=PackageLoader('ajaxWtforms', 'templates'))
 
 class AjaxFormMeta(FormMeta):
     def __init__(cls, name, bases, attrs):
+        cls._unbound_validators = None
         if cls.__module__ not in [b'wtforms.compat', b'ajaxWtforms.forms']:
             view = View(cls)
             ajax_wtforms_bp.route(view.get_path(), methods=['GET', 'POST'])(view)
             print view.get_path(), view.__name__
         super(AjaxFormMeta, cls).__init__(name, bases, attrs)
+
+    def __call__(cls, *args, **kwargs):
+        if cls._unbound_validators == None:
+            cls._unbound_validators = []
+            for name in dir(cls):
+                if not name.startswith('_'):
+                    unbound_validators = getattr(cls, name)
+                    if hasattr(unbound_validators, '_from_validator'):
+                        cls._unbound_validators.append((name, unbound_validators))
+        return super(AjaxFormMeta, cls).__call__(*args, **kwargs)
 
 
 class AjaxForm(with_metaclass(AjaxFormMeta, Form)):
